@@ -14,11 +14,7 @@ namespace Chatroom
         public string serverIP;
         ILoggable log;
         public TcpListener listen = new TcpListener(IPAddress.Any, 2007);
-        List<TcpClient> clientList = new List<TcpClient>();
-
-
-
-        private Dictionary<string, string> users = new Dictionary <string, string>();
+        private Dictionary<TcpClient, string> users = new Dictionary<TcpClient, string>();
         public Server(ILoggable log)
         {
             this.log = log;
@@ -35,11 +31,7 @@ namespace Chatroom
             //Listens for client to connect
             IPAddress ipAddress = IPAddress.Parse(serverIP);
             TcpListener listen = new TcpListener(IPAddress.Any, 2007);
-
-
             //accepts data from client
-
-
         }
 
         public void ListenForClient()
@@ -48,7 +40,6 @@ namespace Chatroom
             //   Console.WriteLine("[Listening...]");
             listen.Start();
             client = listen.AcceptTcpClient();
-            clientList.Add(client);
             Console.WriteLine("[Client connected]");
             Task.Run(() => clientbob(client));
             ListenForClient();
@@ -65,15 +56,15 @@ namespace Chatroom
             {
                 Console.WriteLine("EQUALS USERNAME");
                 string un = string.Concat(ch);
-                users.Add(un, un);
+                users.Add(client, un);
                 JustJoined(un, stream);
             }
             else
             {
                 string dude = string.Concat(ch);
-                for (int i = 0; i < clientList.Count(); i++)
+                for (int i = 0; i < users.Count(); i++)
                 {
-                    if (clientList[i] == client)
+                    if (users.ElementAt(i).Key == client)
                     {
                         dude = ($"\n{users.ElementAt(i).Value} says: {dude}");
                     }
@@ -107,15 +98,10 @@ namespace Chatroom
 
         public void NotifyUsers(string un, NetworkStream stream)
         {
-            foreach(KeyValuePair<string, string> kvp in users)
-            {
-                //user.Notify(user);
-                //may not need above
                 string notify = ($" \n{un} has joined the chatroom");
                 AddToQueue(notify);
                 SendMessage(stream);
                 //Need method to send for display
-            }
         }
 
         public void WriteToLog(string receivedMessage)
@@ -136,9 +122,9 @@ namespace Chatroom
         public void SendMessage(NetworkStream stream)
         {
             byte[] messagee = Encoding.Unicode.GetBytes(messages.Dequeue());
-            for (int i = 0; i < clientList.Count(); i++)
+            for (int i = 0; i < users.Count(); i++)
             {
-                NetworkStream streamz = clientList[i].GetStream();
+                NetworkStream streamz = users.ElementAt(i).Key.GetStream();
                 streamz.Write(messagee, 0, messagee.Length);
             }
         }

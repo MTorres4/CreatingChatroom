@@ -13,6 +13,7 @@ namespace Chatroom
             Client client = new Client();
             client.GetIpAddress();
             client.ConnectToServer();
+            client.send(client.Username);
 
         }
         

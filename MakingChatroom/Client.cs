@@ -14,6 +14,7 @@ namespace Chatroom
         private string username;
         private string messagelog;
         public NetworkStream n;
+        TcpClient client;
         public string Username
         {
             get
@@ -32,7 +33,7 @@ namespace Chatroom
 
         public Client()
         {
-
+            this.username = PromptUserName();
         }
 
 
@@ -46,11 +47,23 @@ namespace Chatroom
         public void ConnectToServer()
         {
             //establishes connection with server
-            TcpClient client = new TcpClient(myIP, 2007);
+            client = new TcpClient(myIP, 2007);
             Console.WriteLine("[Trying to connect to server...]");
             //sends data to server
             n = client.GetStream();
             Console.WriteLine("[Connected]");
+        }
+
+        public string PromptUserName()
+        {
+            Console.Write("Please enter your username: ");
+            string username = Console.ReadLine();
+            username +="9823";
+            return (username);
+        }
+
+        public void EnterMessage()
+        {
             Console.Write("Enter your message: ");
             string dog = Console.ReadLine();
             byte[] message = Encoding.Unicode.GetBytes(dog);

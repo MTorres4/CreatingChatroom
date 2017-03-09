@@ -14,6 +14,7 @@ namespace Chatroom
         public string serverIP;
         ILoggable log;
         public TcpListener listen = new TcpListener(IPAddress.Any, 2007);
+        
 
         //client.username = client.username;
         //client.username = username;
@@ -33,7 +34,7 @@ namespace Chatroom
 
             //Listens for client to connect
             IPAddress ipAddress = IPAddress.Parse(serverIP);
-            TcpListener listen = new TcpListener(ipAddress, 2007);
+            TcpListener listen = new TcpListener(IPAddress.Any, 2007);
            
 
             //accepts data from client
@@ -59,14 +60,26 @@ namespace Chatroom
             byte[] buffer = new byte[client.ReceiveBufferSize];
             int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
             string ch = Encoding.Unicode.GetString(buffer, 0, data);
-            Console.WriteLine($" Message Received: {ch}");
-             if(client == null)
+            ch.ToCharArray();
+            if(ch[ch.Length-1] == '3' && ch[ch.Length - 2] == '2' && ch[ch.Length - 3] == '8' && ch[ch.Length - 4] == '9')
             {
-                return;
+                Console.WriteLine("EQUALS USERNAME");
             }
-            clientbob(client);
+            else
+            {
+                Console.WriteLine($" Message Received: {ch}");
+                if (client == null)
+                {
+                    return;
+                }
+                clientbob(client);
+            }
+            
                // Console.ReadKey();
         }
+
+
+
         public void JoinChatroom()
         {
             //users.Add(user);

@@ -42,7 +42,7 @@ namespace Chatroom
             // Retrive the Name of HOST
             string hostName = Dns.GetHostName();
             // Get the IP
-            myIP = Dns.GetHostEntry(hostName).AddressList[2].ToString();
+            myIP = Dns.GetHostEntry(hostName).AddressList[1].ToString();
         }
         public void ConnectToServer()
         {
@@ -58,23 +58,20 @@ namespace Chatroom
         {
             Console.Write("Please enter your username: ");
             string username = Console.ReadLine();
-            username +="9823";
+            username += "9823";
             return (username);
         }
 
         public void EnterMessage()
         {
-            Console.Write("Enter your message: ");
+            Console.Write("Enter message here: ");
             string dog = Console.ReadLine();
             byte[] message = Encoding.Unicode.GetBytes(dog);
             n.Write(message, 0, message.Length);
-            Console.Write("Enter your message 2: ");
-            string doge = Console.ReadLine();
-            byte[] messagee = Encoding.Unicode.GetBytes(doge);
-            n.Write(messagee, 0, messagee.Length);
+            Task.Run(() => ReceiveMessage());
             //send(n, "Lao");
-            Console.WriteLine("--------------------sent---------------");
-            client.Close();
+            EnterMessage();
+            //client.Close();
             Console.ReadKey();
         }
 
@@ -82,6 +79,21 @@ namespace Chatroom
         {
             byte[] message = Encoding.Unicode.GetBytes(generic);
             n.Write(message, 0, message.Length);
+        }
+
+        public void SendReceive()
+        {
+            EnterMessage();
+        }
+
+        public void ReceiveMessage()
+        {
+
+            byte[] buffer = new byte[client.ReceiveBufferSize];
+            int data = n.Read(buffer, 0, client.ReceiveBufferSize);
+            string ch = Encoding.Unicode.GetString(buffer, 0, data);
+            Console.WriteLine($"message received: {ch}");
+            ReceiveMessage();
         }
 
         public void DisplayNotification()

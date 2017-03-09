@@ -14,8 +14,9 @@ namespace Chatroom
             client.GetIpAddress();
             client.ConnectToServer();
             client.send(client.Username);
+            client.EnterMessage();
 
         }
-        
+
     }
 }

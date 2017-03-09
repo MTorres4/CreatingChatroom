@@ -14,11 +14,13 @@ namespace Chatroom
         public string serverIP;
         ILoggable log;
         public TcpListener listen = new TcpListener(IPAddress.Any, 2007);
-        
+        List<TcpClient> clientList = new List<TcpClient>();
+
+
 
         //client.username = client.username;
-        public string username;
-        private Dictionary<string, string> users = new Dictionary <string, string>();
+        //client.username = username;
+        //private Dictionary<Username, Username> users = new Dictionary <Username, Username>();
         public Server(ILoggable log)
         {
             this.log = log;
@@ -35,7 +37,7 @@ namespace Chatroom
             //Listens for client to connect
             IPAddress ipAddress = IPAddress.Parse(serverIP);
             TcpListener listen = new TcpListener(IPAddress.Any, 2007);
-           
+
 
             //accepts data from client
 
@@ -45,41 +47,42 @@ namespace Chatroom
         public void ListenForClient()
         {
             TcpClient client;
-
-         //   Console.WriteLine("[Listening...]");
+            //   Console.WriteLine("[Listening...]");
             listen.Start();
             client = listen.AcceptTcpClient();
+            clientList.Add(client);
             Console.WriteLine("[Client connected]");
             Task.Run(() => clientbob(client));
             ListenForClient();
-
         }
+
         public void clientbob(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
-            //JustJoined();
             byte[] buffer = new byte[client.ReceiveBufferSize];
             int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
             string ch = Encoding.Unicode.GetString(buffer, 0, data);
             ch.ToCharArray();
-            if(ch[ch.Length-1] == '3' && ch[ch.Length - 2] == '2' && ch[ch.Length - 3] == '8' && ch[ch.Length - 4] == '9')
+            if (ch[ch.Length - 1] == '3' && ch[ch.Length - 2] == '2' && ch[ch.Length - 3] == '8' && ch[ch.Length - 4] == '9')
             {
                 Console.WriteLine("EQUALS USERNAME");
-                string un = string.Concat(ch);
-                un.Equals(username);
-                users.Add(username, username);
+
+
             }
             else
             {
+                string dude = string.Concat(ch);
+                AddToQueue(ch);
+                SendMessage(stream);/*
                 Console.WriteLine($" Message Received: {ch}");
                 if (client == null)
                 {
                     return;
-                }
-                clientbob(client);
+                }*/
             }
-            
-               // Console.ReadKey();
+            clientbob(client);
+
+            // Console.ReadKey();
         }
 
 
@@ -96,7 +99,7 @@ namespace Chatroom
 
         public void NotifyUsers()
         {
-            foreach(KeyValuePair<string, string> kvp in users)
+            //foreach(KeyValuePair<client.username> Kvp in users)
             {
                 //user.Notify(user);
                 //may not need above
@@ -114,11 +117,18 @@ namespace Chatroom
             messages.Enqueue(receivedMessage);
         }
 
-        public void DisplayMessage()
+        public void DisplayMessageInQueue()
         {
-            foreach (string message in messages)
+            messages.Dequeue();
+        }
+
+        public void SendMessage(NetworkStream stream)
+        {
+            byte[] messagee = Encoding.Unicode.GetBytes(messages.Dequeue());
+            for (int i = 0; i < clientList.Count(); i++)
             {
-                Console.WriteLine(message);
+                NetworkStream streamz = clientList[i].GetStream();
+                streamz.Write(messagee, 0, messagee.Length);
             }
         }
     }

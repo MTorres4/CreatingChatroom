@@ -64,11 +64,12 @@ namespace Chatroom
 
         public void EnterMessage()
         {
+            Task.Run(() => ReceiveMessage());
             Console.Write("Enter message here: ");
             string dog = Console.ReadLine();
             byte[] message = Encoding.Unicode.GetBytes(dog);
             n.Write(message, 0, message.Length);
-            Task.Run(() => ReceiveMessage());
+
             //send(n, "Lao");
             EnterMessage();
             //client.Close();
@@ -92,7 +93,7 @@ namespace Chatroom
             byte[] buffer = new byte[client.ReceiveBufferSize];
             int data = n.Read(buffer, 0, client.ReceiveBufferSize);
             string ch = Encoding.Unicode.GetString(buffer, 0, data);
-            Console.WriteLine($"message received: {ch}");
+            Console.WriteLine(ch);
             ReceiveMessage();
         }
 

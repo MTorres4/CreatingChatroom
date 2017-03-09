@@ -67,14 +67,14 @@ namespace Chatroom
             {
                 Console.WriteLine("EQUALS USERNAME");
                 string un = string.Concat(ch);
-                un.Equals(username);
-                users.Add(username, username);
+                users.Add(un, un);
 
             }
             else
             {
                 string dude = string.Concat(ch);
-                AddToQueue(ch);
+                dude = "\n" + dude;
+                AddToQueue(dude);
                 SendMessage(stream);/*
                 Console.WriteLine($" Message Received: {ch}");
                 if (client == null)

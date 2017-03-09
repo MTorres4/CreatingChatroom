@@ -42,7 +42,7 @@ namespace Chatroom
             // Retrive the Name of HOST
             string hostName = Dns.GetHostName();
             // Get the IP
-            myIP = Dns.GetHostEntry(hostName).AddressList[1].ToString();
+            myIP = Dns.GetHostEntry(hostName).AddressList[2].ToString();
         }
         public void ConnectToServer()
         {

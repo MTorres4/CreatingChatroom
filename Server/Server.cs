@@ -49,48 +49,45 @@ namespace Chatroom
         {
             NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[client.ReceiveBufferSize];
-            int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
-            string ch = Encoding.Unicode.GetString(buffer, 0, data);
-            ch.ToCharArray();
-            if (ch[ch.Length - 1] == '3' && ch[ch.Length - 2] == '2' && ch[ch.Length - 3] == '8' && ch[ch.Length - 4] == '9')
+            try
             {
-                Console.WriteLine("EQUALS USERNAME");
-                string un = string.Concat(ch);
-                users.Add(client, un);
-                JustJoined(un, stream, client);
-            }
-            else if(ch[ch.Length - 1] == 'T' && ch[ch.Length - 2] == 'I' && ch[ch.Length - 3] == 'X' && ch[ch.Length - 4] == 'E')
-            {
-                string un = string.Concat(ch);
-                ExitChatRoom(un, stream, client);
-                
-            }
-            else
-            {
-                string dude = string.Concat(ch);
-                for (int i = 0; i < users.Count(); i++)
+                int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
+                string ch = Encoding.Unicode.GetString(buffer, 0, data);
+                ch.ToCharArray();
+                if (ch[ch.Length - 1] == '3' && ch[ch.Length - 2] == '2' && ch[ch.Length - 3] == '8' && ch[ch.Length - 4] == '9')
                 {
-                    if (users.ElementAt(i).Key == client)
-                    {
-                        dude = ($"\n{users.ElementAt(i).Value} says: {dude}");
-                    }
+                    Console.WriteLine("EQUALS USERNAME");
+                    string un = string.Concat(ch);
+                    users.Add(client, un);
+                    JustJoined(un, stream, client);
                 }
-                log.WriteTo(dude);
-                AddToQueue(dude);
-
-                SendMessage(stream);/*
-                Console.WriteLine($" Message Received: {ch}");
-                if (client == null)
+                else if (ch[ch.Length - 1] == 'T' && ch[ch.Length - 2] == 'I' && ch[ch.Length - 3] == 'X' && ch[ch.Length - 4] == 'E')
                 {
-                    return;
-                }*/
+                    string un = string.Concat(ch);
+                    ExitChatRoom(un, stream, client);
+                }
+                else
+                {
+                    string dude = string.Concat(ch);
+                    for (int i = 0; i < users.Count(); i++)
+                    {
+                        if (users.ElementAt(i).Key == client)
+                        {
+                            dude = ($"\n{users.ElementAt(i).Value} says: {dude}");
+                        }
+                    }
+                    log.WriteTo(dude);
+                    AddToQueue(dude);
+                    SendMessage(stream);
+                }
+                clientbob(client);
             }
-            clientbob(client);
-
-            // Console.ReadKey();
+            catch(Exception)
+            {
+                //Console.WriteLine("User not online!");
+                return;
+            }
         }
-
-
 
         public void JoinChatroom()
         {
@@ -159,7 +156,8 @@ namespace Chatroom
                 }
                 catch
                 {
-
+                    Console.WriteLine($" {users.ElementAt(i).Value} is no longer online.");
+                    continue;
                 }
             }
         }

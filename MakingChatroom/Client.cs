@@ -33,7 +33,8 @@ namespace Chatroom
             // Retrive the Name of HOST
             string hostName = Dns.GetHostName();
             // Get the IP
-            myIP = Dns.GetHostEntry(hostName).AddressList[2].ToString();
+            myIP = Dns.GetHostEntry(hostName).AddressList[1].ToString();
+           // 192.168.0.128
         }
         public void ConnectToServer()
         {
@@ -64,7 +65,7 @@ namespace Chatroom
             string ch = Encoding.Unicode.GetString(message, 0, message.Length);
             if(ch == "EXIT")
             {
-                client.Close();
+               // client.Close();
                 Environment.Exit(0);
             }
 

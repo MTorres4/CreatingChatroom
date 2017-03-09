@@ -47,10 +47,12 @@ namespace Chatroom
 
         public void clientbob(TcpClient client)
         {
-            NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[client.ReceiveBufferSize];
+            string dude="";
+            NetworkStream stream = null;
             try
             {
+                stream = client.GetStream();
+                byte[] buffer = new byte[client.ReceiveBufferSize];
                 int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
                 string ch = Encoding.Unicode.GetString(buffer, 0, data);
                 ch.ToCharArray();
@@ -68,25 +70,31 @@ namespace Chatroom
                 }
                 else
                 {
-                    string dude = string.Concat(ch);
+                    dude = string.Concat(ch);
                     for (int i = 0; i < users.Count(); i++)
                     {
                         if (users.ElementAt(i).Key == client)
                         {
                             dude = ($"\n{users.ElementAt(i).Value} says: {dude}");
                         }
-                    }
-                    log.WriteTo(dude);
-                    AddToQueue(dude);
-                    SendMessage(stream);
+            }                    }
                 }
-                clientbob(client);
-            }
+
             catch(Exception)
             {
                 //Console.WriteLine("User not online!");
-                return;
+                // return;
+                if (stream == null)
+                {
+                    return;
+                }
+
             }
+            log.WriteTo(dude);
+            AddToQueue(dude);
+            SendMessage(stream);
+            clientbob(client);
+
         }
 
         public void JoinChatroom()
@@ -149,15 +157,16 @@ namespace Chatroom
             byte[] messagee = Encoding.Unicode.GetBytes(messages.Dequeue());
             for (int i = 0; i < users.Count(); i++)
             {
-                NetworkStream streamz = users.ElementAt(i).Key.GetStream();
                 try
                 {
+                    NetworkStream streamz = users.ElementAt(i).Key.GetStream();
                     streamz.Write(messagee, 0, messagee.Length);
                 }
                 catch
                 {
                     Console.WriteLine($" {users.ElementAt(i).Value} is no longer online.");
-                    continue;
+                    users.Remove(users.ElementAt(i).Key);
+                        continue;
                 }
             }
         }

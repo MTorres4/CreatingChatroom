@@ -18,9 +18,8 @@ namespace Chatroom
 
 
 
-        //client.username = client.username;
-        //client.username = username;
-        //private Dictionary<Username, Username> users = new Dictionary <Username, Username>();
+        public string username;
+        private Dictionary<string, string> users = new Dictionary <string, string>();
         public Server(ILoggable log)
         {
             this.log = log;
@@ -59,6 +58,7 @@ namespace Chatroom
         public void clientbob(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
+            //JustJoined();
             byte[] buffer = new byte[client.ReceiveBufferSize];
             int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
             string ch = Encoding.Unicode.GetString(buffer, 0, data);
@@ -66,7 +66,9 @@ namespace Chatroom
             if (ch[ch.Length - 1] == '3' && ch[ch.Length - 2] == '2' && ch[ch.Length - 3] == '8' && ch[ch.Length - 4] == '9')
             {
                 Console.WriteLine("EQUALS USERNAME");
-
+                string un = string.Concat(ch);
+                un.Equals(username);
+                users.Add(username, username);
 
             }
             else
@@ -99,7 +101,7 @@ namespace Chatroom
 
         public void NotifyUsers()
         {
-            //foreach(KeyValuePair<client.username> Kvp in users)
+            foreach(KeyValuePair<string, string> kvp in users)
             {
                 //user.Notify(user);
                 //may not need above

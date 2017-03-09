@@ -10,6 +10,5 @@ namespace Chatroom
     {
         string Username { get; }
         void DisplayNotification();
-        string MessageLog { get; }
     }
 }

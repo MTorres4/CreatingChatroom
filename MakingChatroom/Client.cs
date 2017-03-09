@@ -12,7 +12,6 @@ namespace Chatroom
     {
         public string myIP;
         private string username;
-        private string messagelog;
         public NetworkStream n;
         TcpClient client;
         public string Username
@@ -20,14 +19,6 @@ namespace Chatroom
             get
             {
                 return username;
-            }
-        }
-
-        public string MessageLog
-        {
-            get
-            {
-                return messagelog;
             }
         }
 
@@ -42,7 +33,7 @@ namespace Chatroom
             // Retrive the Name of HOST
             string hostName = Dns.GetHostName();
             // Get the IP
-            myIP = Dns.GetHostEntry(hostName).AddressList[2].ToString();
+            myIP = Dns.GetHostEntry(hostName).AddressList[1].ToString();
         }
         public void ConnectToServer()
         {
@@ -69,6 +60,12 @@ namespace Chatroom
             string dog = Console.ReadLine();
             byte[] message = Encoding.Unicode.GetBytes(dog);
             n.Write(message, 0, message.Length);
+
+            string ch = Encoding.Unicode.GetString(message, 0, message.Length);
+            if(ch == "EXIT")
+            {
+                client.Close();
+            }
 
             //send(n, "Lao");
             EnterMessage();

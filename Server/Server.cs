@@ -57,7 +57,13 @@ namespace Chatroom
                 Console.WriteLine("EQUALS USERNAME");
                 string un = string.Concat(ch);
                 users.Add(client, un);
-                JustJoined(un, stream);
+                JustJoined(un, stream, client);
+            }
+            else if(ch[ch.Length - 1] == 'T' && ch[ch.Length - 2] == 'I' && ch[ch.Length - 3] == 'X' && ch[ch.Length - 4] == 'E')
+            {
+                string un = string.Concat(ch);
+                ExitChatRoom(un, stream, client);
+                
             }
             else
             {
@@ -90,17 +96,39 @@ namespace Chatroom
         {
             //users.Add(user);
         }
-
-        public void JustJoined(string un, NetworkStream stream)
+        
+        public void ExitChatRoom(string un, NetworkStream stream, TcpClient client)
         {
-            NotifyUsers(un, stream);
+            NotifyUsers(un, stream,2, client);
+
         }
 
-        public void NotifyUsers(string un, NetworkStream stream)
+        public void JustJoined(string un, NetworkStream stream, TcpClient client)
         {
-                string notify = ($" \n{un} has joined the chatroom");
-                AddToQueue(notify);
-                SendMessage(stream);
+            NotifyUsers(un, stream,1,client);
+        }
+
+        public void NotifyUsers(string un, NetworkStream stream, int notification, TcpClient client)
+        {
+            string notify= "";
+            if(notification == 1)
+            {
+                notify = ($" \n{un} has joined the chatroom");
+            }
+            else
+            {
+                for (int i = 0; i < users.Count(); i++)
+                {
+                    if (users.ElementAt(i).Key == client)
+                    {
+                        notify = ($" \n{users.ElementAt(i).Value} has left the chatroom");
+                    }
+                }
+                
+            }
+            WriteToLog(notify);
+            AddToQueue(notify);
+            SendMessage(stream);
                 //Need method to send for display
         }
 
@@ -125,7 +153,14 @@ namespace Chatroom
             for (int i = 0; i < users.Count(); i++)
             {
                 NetworkStream streamz = users.ElementAt(i).Key.GetStream();
-                streamz.Write(messagee, 0, messagee.Length);
+                try
+                {
+                    streamz.Write(messagee, 0, messagee.Length);
+                }
+                catch
+                {
+
+                }
             }
         }
     }

@@ -71,8 +71,16 @@ namespace Chatroom
             else
             {
                 string dude = string.Concat(ch);
-                dude = "\n" + dude;
+                for (int i = 0; i < clientList.Count(); i++)
+                {
+                    if (clientList[i] == client)
+                    {
+                        dude = ($"\n{users.ElementAt(i).Value} says: {dude}");
+                    }
+                }
+                log.WriteTo(dude);
                 AddToQueue(dude);
+
                 SendMessage(stream);/*
                 Console.WriteLine($" Message Received: {ch}");
                 if (client == null)

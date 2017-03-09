@@ -13,6 +13,7 @@ namespace Chatroom
         public string myIP;
         private string username;
         private string messagelog;
+        public NetworkStream n;
         public string Username
         {
             get
@@ -45,18 +46,26 @@ namespace Chatroom
         public void ConnectToServer()
         {
             //establishes connection with server
-            TcpClient client = new TcpClient("192.168.0.128", 2007);
+            TcpClient client = new TcpClient(myIP, 2007);
             Console.WriteLine("[Trying to connect to server...]");
             //sends data to server
-            NetworkStream n = client.GetStream();
+            n = client.GetStream();
             Console.WriteLine("[Connected]");
-            send(n, "Lao");
+            Console.Write("Enter your message: ");
+            string dog = Console.ReadLine();
+            byte[] message = Encoding.Unicode.GetBytes(dog);
+            n.Write(message, 0, message.Length);
+            Console.Write("Enter your message 2: ");
+            string doge = Console.ReadLine();
+            byte[] messagee = Encoding.Unicode.GetBytes(doge);
+            n.Write(messagee, 0, messagee.Length);
+            //send(n, "Lao");
             Console.WriteLine("--------------------sent---------------");
             client.Close();
             Console.ReadKey();
         }
 
-        public void send(NetworkStream n, string generic)
+        public void send(string generic)
         {
             byte[] message = Encoding.Unicode.GetBytes(generic);
             n.Write(message, 0, message.Length);

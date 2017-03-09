@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace Chatroom
 {
-    class CProgram
+    public class CProgram
     {
         static void Main(string[] args)
         {
             Client client = new Client();
             client.GetIpAddress();
             client.ConnectToServer();
+
         }
+        
     }
 }

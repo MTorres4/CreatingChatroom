@@ -11,9 +11,10 @@ namespace Chatroom
     class Server : IUser
     {
         public Queue<string> messages = new Queue<string>();
-        public TcpClient client;
         public string serverIP;
         ILoggable log;
+        public TcpListener listen = new TcpListener(IPAddress.Any, 2007);
+
         //client.username = client.username;
         //client.username = username;
         //private Dictionary<Username, Username> users = new Dictionary <Username, Username>();
@@ -33,30 +34,23 @@ namespace Chatroom
             //Listens for client to connect
             IPAddress ipAddress = IPAddress.Parse(serverIP);
             TcpListener listen = new TcpListener(ipAddress, 2007);
-            Console.WriteLine("[Listening...]");
-            listen.Start();
-            TcpClient client = listen.AcceptTcpClient();
-            //TcpClient client2 = listen.AcceptTcpClient();
-            Console.WriteLine("[Client connected]");
+           
 
             //accepts data from client
 
 
         }
 
-        public TcpClient ListenForClient()
+        public void ListenForClient()
         {
-            //Listens for client to connect
-            //  IPAddress ipAddress = IPAddress.Parse(serverIP);
-            while (true)
-            {
-                TcpListener listen = new TcpListener(IPAddress.Any, 2007);
-                Console.WriteLine("[Listening...]");
-                listen.Start();
-                client = listen.AcceptTcpClient();
-                Console.WriteLine("[Client connected]");
+            TcpClient client;
 
-            }
+         //   Console.WriteLine("[Listening...]");
+            listen.Start();
+            client = listen.AcceptTcpClient();
+            Console.WriteLine("[Client connected]");
+            Task.Run(() => clientbob(client));
+            ListenForClient();
 
         }
         public void clientbob(TcpClient client)
@@ -66,16 +60,12 @@ namespace Chatroom
             int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
             string ch = Encoding.Unicode.GetString(buffer, 0, data);
             Console.WriteLine($" Message Received: {ch}");
-            client.Close();
-            Console.ReadKey();
-
-            //NetworkStream stream2 = client2.GetStream();
-            //byte[] buffer2 = new byte[client2.ReceiveBufferSize];
-            //int data2 = stream.Read(buffer2, 0, client2.ReceiveBufferSize);
-            //string ch2 = Encoding.Unicode.GetString(buffer2, 0, data2);
-            //Console.WriteLine($" Message Received: {ch2}");
-            //client2.Close();
-            //Console.ReadKey();
+             if(client == null)
+            {
+                return;
+            }
+            clientbob(client);
+               // Console.ReadKey();
         }
         public void JoinChatroom()
         {

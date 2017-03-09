@@ -18,7 +18,6 @@ namespace Chatroom
 
 
 
-        public string username;
         private Dictionary<string, string> users = new Dictionary <string, string>();
         public Server(ILoggable log)
         {
@@ -58,7 +57,6 @@ namespace Chatroom
         public void clientbob(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
-            //JustJoined();
             byte[] buffer = new byte[client.ReceiveBufferSize];
             int data = stream.Read(buffer, 0, client.ReceiveBufferSize);
             string ch = Encoding.Unicode.GetString(buffer, 0, data);
@@ -68,7 +66,7 @@ namespace Chatroom
                 Console.WriteLine("EQUALS USERNAME");
                 string un = string.Concat(ch);
                 users.Add(un, un);
-
+                JustJoined(un, stream);
             }
             else
             {
@@ -94,18 +92,21 @@ namespace Chatroom
             //users.Add(user);
         }
 
-        public void JustJoined()
+        public void JustJoined(string un, NetworkStream stream)
         {
-            NotifyUsers();
+            NotifyUsers(un, stream);
         }
 
-        public void NotifyUsers()
+        public void NotifyUsers(string un, NetworkStream stream)
         {
             foreach(KeyValuePair<string, string> kvp in users)
             {
                 //user.Notify(user);
                 //may not need above
-                //CWL($"{user.Username} has joined the chatroom"); Need method to send for display
+                string notify = ($" \n{un} has joined the chatroom");
+                AddToQueue(notify);
+                SendMessage(stream);
+                //Need method to send for display
             }
         }
 

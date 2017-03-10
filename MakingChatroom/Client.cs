@@ -8,19 +8,12 @@ using System.Net;
 
 namespace Chatroom
 {
-    class Client : IGui
+    class Client
     {
         public string myIP;
-        private string username;
+        public string username;
         public NetworkStream connection;
         TcpClient client;
-        public string Username
-        {
-            get
-            {
-                return username;
-            }
-        }
 
         public Client()
         {
@@ -48,8 +41,12 @@ namespace Chatroom
 
         public string PromptingForUserName()
         {
-            Console.Write("Please enter your username: ");
+            Console.Write("             Welcome to Chatroom!   "
+                + " \n To get started, enter a username and begin chatting!"
+                + " \n To leave the chatroom, type EXIT in all caps."
+                + " \n Please enter your username: ");
             string username = Console.ReadLine();
+            Console.Clear();
             username += "9823";
             return (username);
         }
@@ -90,11 +87,6 @@ namespace Chatroom
             {
                 return;
             }
-        }
-
-        public void DisplayNotification()
-        {
-            Console.WriteLine($"{Username} has joined the chatroom...");
         }
     }
 }

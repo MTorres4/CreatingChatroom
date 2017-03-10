@@ -46,8 +46,7 @@ namespace Chatroom
                 }
                 else if (convertedmessage[convertedmessage.Length - 1] == 'T' && convertedmessage[convertedmessage.Length - 2] == 'I' && convertedmessage[convertedmessage.Length - 3] == 'X' && convertedmessage[convertedmessage.Length - 4] == 'E')
                 {
-                    string username = string.Concat(convertedmessage);
-                    ExitingChatroom(username, client);
+                    ExitingChatroom(client);
                 }
                 else
                 {
@@ -88,10 +87,9 @@ namespace Chatroom
             NotifyingUsers(username, 1, client);
         }
 
-        public void ExitingChatroom(string username, TcpClient client)
+        public void ExitingChatroom(TcpClient client)
         {
-            NotifyingUsers(username, 2, client);
-
+            NotifyingUsers("", 2, client);
         }
 
         private void NotifyingUsers(string username, int notification, TcpClient client)
@@ -138,8 +136,8 @@ namespace Chatroom
             {
                 try
                 {
-                    NetworkStream streamz = users.ElementAt(i).Key.GetStream();
-                    streamz.Write(message, 0, message.Length);
+                    NetworkStream stream = users.ElementAt(i).Key.GetStream();
+                    stream.Write(message, 0, message.Length);
                 }
                 catch
                 {

@@ -25,11 +25,11 @@ namespace Chatroom
             listen.Start();
             client = listen.AcceptTcpClient();
             Console.WriteLine("[Client connected]");
-            Task.Run(() => ReceivingData(client));
+            Task.Run(() => ConvertingData(client));
             ListeningForClient();
         }
 
-        public void ReceivingData(TcpClient client)
+        public void ConvertingData(TcpClient client)
         {
             string message = "";
             NetworkStream stream = null;
@@ -42,12 +42,12 @@ namespace Chatroom
                 convertedmessage.ToCharArray();
                 if (convertedmessage[convertedmessage.Length - 1] == '3' && convertedmessage[convertedmessage.Length - 2] == '2' && convertedmessage[convertedmessage.Length - 3] == '8' && convertedmessage[convertedmessage.Length - 4] == '9')
                 {
-                    JoiningChatroom(convertedmessage, stream, client);
+                    JoiningChatroom(convertedmessage, client);
                 }
                 else if (convertedmessage[convertedmessage.Length - 1] == 'T' && convertedmessage[convertedmessage.Length - 2] == 'I' && convertedmessage[convertedmessage.Length - 3] == 'X' && convertedmessage[convertedmessage.Length - 4] == 'E')
                 {
                     string username = string.Concat(convertedmessage);
-                    ExitingChatroom(username, stream, client);
+                    ExitingChatroom(username, client);
                 }
                 else
                 {
@@ -72,29 +72,29 @@ namespace Chatroom
             WritingToLog(message);
             AddingToQueue(message);
             SendingMessage();
-            ReceivingData(client);
+            ConvertingData(client);
         }
 
-        public void JoiningChatroom(string convertedmessage, NetworkStream stream, TcpClient client)
+        public void JoiningChatroom(string convertedmessage, TcpClient client)
         {
             Console.WriteLine("Username saved");
             string username = string.Concat(convertedmessage);
             users.Add(client, username);
-            JustJoiningChatroom(username, stream, client);
+            JustJoiningChatroom(username, client);
         }
 
-        public void JustJoiningChatroom(string username, NetworkStream stream, TcpClient client)
+        public void JustJoiningChatroom(string username, TcpClient client)
         {
-            NotifyingUsers(username, stream, 1, client);
+            NotifyingUsers(username, 1, client);
         }
 
-        public void ExitingChatroom(string username, NetworkStream stream, TcpClient client)
+        public void ExitingChatroom(string username, TcpClient client)
         {
-            NotifyingUsers(username, stream, 2, client);
+            NotifyingUsers(username, 2, client);
 
         }
 
-        private void NotifyingUsers(string username, NetworkStream stream, int notification, TcpClient client)
+        private void NotifyingUsers(string username, int notification, TcpClient client)
         {
             string notify = "";
             if(notification == 1)

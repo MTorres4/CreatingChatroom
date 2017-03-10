@@ -12,12 +12,7 @@ namespace Chatroom
         {
             Log log = new Log();
             Server server = new Server(log);
-            server.AcceptClient();
-
-            server.ListenForClient();
-            //server.clientbob(server.client);
-            // Task.Run(() => server.ListenForClient());
-
+            server.ListeningForClient();
         }
     }
 }

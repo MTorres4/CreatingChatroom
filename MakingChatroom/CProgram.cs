@@ -11,12 +11,10 @@ namespace Chatroom
         static void Main(string[] args)
         {
             Client client = new Client();
-            client.GetIpAddress();
-            client.ConnectToServer();
-            client.send(client.Username);
-            client.EnterMessage();
-
+            client.GettingIpAddress();
+            client.ConnectingToServer();
+            client.Sending(client.Username);
+            client.EnteringMessage();
         }
-
     }
 }

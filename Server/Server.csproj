@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ILoggable.cs" />
-    <Compile Include="IUser.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="SProgram.cs" />

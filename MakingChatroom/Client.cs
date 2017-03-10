@@ -12,7 +12,7 @@ namespace Chatroom
     {
         public string myIP;
         private string username;
-        public NetworkStream n;
+        public NetworkStream connection;
         TcpClient client;
         public string Username
         {
@@ -24,29 +24,29 @@ namespace Chatroom
 
         public Client()
         {
-            this.username = PromptUserName();
+            this.username = PromptingForUserName();
         }
 
 
-        public void GetIpAddress()
+        public void GettingIpAddress()
         {
             // Retrive the Name of HOST
             string hostName = Dns.GetHostName();
             // Get the IP
-            myIP = Dns.GetHostEntry(hostName).AddressList[1].ToString();
+            myIP = Dns.GetHostEntry(hostName).AddressList[2].ToString();
            // 192.168.0.128
         }
-        public void ConnectToServer()
+        public void ConnectingToServer()
         {
             //establishes connection with server
             client = new TcpClient(myIP, 2007);
             Console.WriteLine("[Trying to connect to server...]");
             //sends data to server
-            n = client.GetStream();
+            connection = client.GetStream();
             Console.WriteLine("[Connected]");
         }
 
-        public string PromptUserName()
+        public string PromptingForUserName()
         {
             Console.Write("Please enter your username: ");
             string username = Console.ReadLine();
@@ -54,51 +54,40 @@ namespace Chatroom
             return (username);
         }
 
-        public void EnterMessage()
+        public void EnteringMessage()
         {
-            Task.Run(() => ReceiveMessage());
+            Task.Run(() => ReceivingMessage());
             Console.Write("Enter message here: ");
-            string dog = Console.ReadLine();
-            byte[] message = Encoding.Unicode.GetBytes(dog);
-            n.Write(message, 0, message.Length);
-
-            string ch = Encoding.Unicode.GetString(message, 0, message.Length);
-            if(ch == "EXIT")
+            string input = Console.ReadLine();
+            byte[] message = Encoding.Unicode.GetBytes(input);
+            connection.Write(message, 0, message.Length);
+            string entry = Encoding.Unicode.GetString(message, 0, message.Length);
+            if(entry == "EXIT")
             {
-               // client.Close();
                 Environment.Exit(0);
             }
-
-            //send(n, "Lao");
-            EnterMessage();
-            //client.Close();
+            EnteringMessage();
             Console.ReadKey();
         }
 
-        public void send(string generic)
+        public void Sending(string generic)
         {
             byte[] message = Encoding.Unicode.GetBytes(generic);
-            n.Write(message, 0, message.Length);
+            connection.Write(message, 0, message.Length);
         }
 
-        public void SendReceive()
-        {
-            EnterMessage();
-        }
-
-        public void ReceiveMessage()
+        public void ReceivingMessage()
         {
             try
             {
                 byte[] buffer = new byte[client.ReceiveBufferSize];
-                int data = n.Read(buffer, 0, client.ReceiveBufferSize);
-                string ch = Encoding.Unicode.GetString(buffer, 0, data);
-                Console.WriteLine(ch);
-                ReceiveMessage();
+                int data = connection.Read(buffer, 0, client.ReceiveBufferSize);
+                string message = Encoding.Unicode.GetString(buffer, 0, data);
+                Console.WriteLine(message);
+                ReceivingMessage();
             }
             catch(Exception)
             {
-                //Console.WriteLine("User not online!");
                 return;
             }
         }
